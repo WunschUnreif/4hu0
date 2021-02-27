@@ -1,0 +1,3 @@
+add_executable(ut-mech-1 test-1.cpp)
+target_link_libraries(ut-mech-1 ChessMechanism)
+target_include_directories(ut-mech-1 PUBLIC "./" "../")

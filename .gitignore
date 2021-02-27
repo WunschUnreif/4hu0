@@ -1,0 +1,4 @@
+third/*
+!third/install.sh
+
+build

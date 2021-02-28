@@ -16,6 +16,13 @@ Party opponent_party_of(Party party) {
 }
 
 
+// ===---------- ChessmanType ----------=== //
+
+bool is_attackable_chessman_type(ChessmanType type) {
+    return type == ROOK || type == HORSE || type == CANNON || type == PAWN;
+}
+
+
 // ===---------- ChessmanPosition::* ----------=== //
 
 ChessmanPosition ChessmanPosition::operator+ (std::pair<int, int> d) const {
@@ -33,9 +40,7 @@ std::string ChessmanPosition::position_name() const {
 
 // ===---------- Chessman::* ----------=== //
 
-std::deque<std::pair<int, int>> rook_cannon_diffs(ChessmanPosition pos) {
-    std::deque<std::pair<int, int>> diffs;
-
+void rook_cannon_diffs(ChessmanPosition pos, std::deque<std::pair<int, int>> & diffs) {
     for(int dx = 0 - pos.x; dx <= 8 - pos.x; dx++) {
         if(dx == 0) continue;
         diffs.push_back(std::make_pair(dx, 0));
@@ -45,11 +50,9 @@ std::deque<std::pair<int, int>> rook_cannon_diffs(ChessmanPosition pos) {
         if(dy == 0) continue;
         diffs.push_back(std::make_pair(0, dy));
     }
-
-    return diffs;
 }
 
-std::deque<std::pair<int, int>> horse_diffs(ChessmanPosition pos) {
+void horse_diffs(ChessmanPosition pos, std::deque<std::pair<int, int>> & diffs) {
     static int moves [8][2] = {
         { 1, 2}, { 1, -2},
         {-1, 2}, {-1, -2},
@@ -57,16 +60,12 @@ std::deque<std::pair<int, int>> horse_diffs(ChessmanPosition pos) {
         {-2, 1}, {-2, -1}
     };
 
-    std::deque<std::pair<int, int>> diffs;
-
     for(int move_index = 0; move_index < 8; ++move_index){
         auto d = std::make_pair(moves[move_index][0], moves[move_index][1]);
         if((pos + d).valid()) {
             diffs.push_back(d);
         }
     }
-    
-    return diffs;
 }
 
 bool valid_elephant_target(ChessmanPosition target, Party party) {
@@ -89,13 +88,11 @@ bool valid_elephant_target(ChessmanPosition target, Party party) {
     }
 }
 
-std::deque<std::pair<int, int>> elephant_diffs(ChessmanPosition pos, Party party) {
+void elephant_diffs(ChessmanPosition pos, Party party, std::deque<std::pair<int, int>> & diffs) {
     static int moves [4][2] = {
         { 2, 2}, { 2, -2},
         {-2, 2}, {-2, -2},
     };
-
-    std::deque<std::pair<int, int>> diffs;
 
     for(int move_index = 0; move_index < 4; ++move_index){
         auto d = std::make_pair(moves[move_index][0], moves[move_index][1]);
@@ -103,8 +100,6 @@ std::deque<std::pair<int, int>> elephant_diffs(ChessmanPosition pos, Party party
             diffs.push_back(d);
         }
     }
-    
-    return diffs;
 }
 
 bool valid_advisor_target(ChessmanPosition target, Party party) {
@@ -127,22 +122,18 @@ bool valid_advisor_target(ChessmanPosition target, Party party) {
     }
 }
 
-std::deque<std::pair<int, int>> advisor_diffs(ChessmanPosition pos, Party party) {
+void advisor_diffs(ChessmanPosition pos, Party party, std::deque<std::pair<int, int>> & diffs) {
     static int moves [4][2] = {
         { 1, 1}, { 1, -1},
         {-1, 1}, {-1, -1},
     };
-
-    std::deque<std::pair<int, int>> diffs;
 
     for(int move_index = 0; move_index < 4; ++move_index){
         auto d = std::make_pair(moves[move_index][0], moves[move_index][1]);
         if((pos + d).valid() && valid_advisor_target(pos + d, party)) {
             diffs.push_back(d);
         }
-    }
-    
-    return diffs;
+    }    
 }
 
 bool valid_king_target(ChessmanPosition target, Party party) {
@@ -153,31 +144,25 @@ bool valid_king_target(ChessmanPosition target, Party party) {
     }
 }
 
-std::deque<std::pair<int, int>> king_diffs(ChessmanPosition pos, Party party) {
+void king_diffs(ChessmanPosition pos, Party party, std::deque<std::pair<int, int>> & diffs) {
     static int moves [4][2] = {
         {1, 0}, {-1,  0},
         {0, 1}, { 0, -1},
     };
-
-    std::deque<std::pair<int, int>> diffs;
 
     for(int move_index = 0; move_index < 4; ++move_index){
         auto d = std::make_pair(moves[move_index][0], moves[move_index][1]);
         if((pos + d).valid() && valid_king_target(pos + d, party)) {
             diffs.push_back(d);
         }
-    }
-    
-    return diffs;
+    }    
 }
 
-std::deque<std::pair<int, int>> pawn_diffs(ChessmanPosition pos, Party party) {
+void pawn_diffs(ChessmanPosition pos, Party party, std::deque<std::pair<int, int>> & diffs) {
     static auto red_direct      = std::make_pair( 0,  1);
     static auto black_direct    = std::make_pair( 0, -1);
     static auto left            = std::make_pair( 1,  0);
     static auto right           = std::make_pair(-1,  0);
-
-    std::deque<std::pair<int, int>> diffs;
 
     if(party == RED) {
         if((pos + red_direct).valid()) diffs.push_back(red_direct);
@@ -192,19 +177,17 @@ std::deque<std::pair<int, int>> pawn_diffs(ChessmanPosition pos, Party party) {
             if((pos + right).valid()) diffs.push_back(right);
         }
     }
-    
-    return diffs;
 }
 
-std::deque<std::pair<int, int>> Chessman::valid_move_diffs(ChessmanPosition pos) const {
+void Chessman::valid_move_diffs(ChessmanPosition pos, std::deque<std::pair<int, int>> & diffs) const {
     switch(type) {
-    case ROOK       : return rook_cannon_diffs(pos);
-    case CANNON     : return rook_cannon_diffs(pos);
-    case HORSE      : return horse_diffs(pos);
-    case ELEPHANT   : return elephant_diffs(pos, party);
-    case ADVISOR    : return advisor_diffs(pos, party);
-    case KING       : return king_diffs(pos, party);
-    case PAWN       : return pawn_diffs(pos, party);
+    case ROOK       : return rook_cannon_diffs(pos, diffs);
+    case CANNON     : return rook_cannon_diffs(pos, diffs);
+    case HORSE      : return horse_diffs(pos, diffs);
+    case ELEPHANT   : return elephant_diffs(pos, party, diffs);
+    case ADVISOR    : return advisor_diffs(pos, party, diffs);
+    case KING       : return king_diffs(pos, party, diffs);
+    case PAWN       : return pawn_diffs(pos, party, diffs);
 
     default         : throw  std::runtime_error("Invalid chessman");
     }

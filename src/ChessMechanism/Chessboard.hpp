@@ -62,18 +62,18 @@ struct Chessboard {
      *        without checking the target configuration is been checked.
      * 
      * @param pos position of the chessman
-     * @return std::deque<ChessMove> valid move for the chessman, or empty if there is no chessman
+     * @param result valid move for the chessman, or empty if there is no chessman
      */
-    std::deque<ChessMove> checkless_move_list_for(ChessmanPosition pos) const;
+    void checkless_move_list_for(ChessmanPosition pos, std::deque<ChessMove> & result, ChessmanType as_type = ChessmanType::ERROR) const;
 
     /**
      * @brief Generate the move list for a given party without checking 
      *        the target configuration is been checked.
      * 
      * @param party party to generate move list
-     * @return std::deque<ChessMove> valid move list
+     * @param[out] moves legal moves is attached to it
      */
-    std::deque<ChessMove> checkless_move_list(Party party) const;
+    void checkless_move_list(Party party, std::deque<ChessMove> & moves) const;
 
     /**
      * @brief generate the chessboard after a move
@@ -82,6 +82,13 @@ struct Chessboard {
      * @return Chessboard chessboard configuration after the move
      */
     Chessboard board_after_move(const ChessMove & move) const;
+
+    /**
+     * @brief Commit a legal move to the board
+     * 
+     * @param move the legal move to commit
+     */
+    void commit_move(const ChessMove & move);
 
     /**
      * @brief Check if the given party is being checked by its opponent in the board configuration
@@ -99,6 +106,22 @@ struct Chessboard {
      * @return std::deque<ChessMove> legal move list
      */
     std::deque<ChessMove> legal_move_list(Party party) const;
+
+    /**
+     * @brief Count the number of the designated chessman.
+     * 
+     * @param type chessman type to count
+     * @param party party to count
+     * @return int the chessman count
+     */
+    int chessman_count(ChessmanType type, Party party) const;
+
+    /**
+     * @brief Count the total number of attackable chessman.
+     * 
+     * @return int the chessman count
+     */
+    int attackable_chessman_count() const;
 
 // private:
 //!
@@ -119,6 +142,12 @@ struct Chessboard {
 
 
     ChessmanPosition king_position_of(Party party) const;
+
+
+    bool is_been_checked_by_rook(Party party, ChessmanPosition king_pos) const;
+    bool is_been_checked_by_cannon(Party party, ChessmanPosition king_pos) const;
+    bool is_been_checked_by_horse(Party party, ChessmanPosition king_pos) const;
+    bool is_been_checked_by_pawn(Party party, ChessmanPosition king_pos) const;
 };
 
 }

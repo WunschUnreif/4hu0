@@ -1,6 +1,7 @@
 #include "Chessboard.hpp"
 #include "Chessman.hpp"
 #include "ChessMove.hpp"
+#include "Configuration.hpp"
 
 #include <iostream>
 
@@ -20,20 +21,26 @@ int main() {
     auto moves = board.legal_move_list(RED);
     std::cout << "RED:" << std::endl;
     for(auto & m : moves) {
-        std::cout << "------------------" << std::endl;
+        // std::cout << "------------------" << std::endl;
         std::cout << m.move_name() << std::endl;
-        board.board_after_move(m).debug_print(std::cout);
-        std::cout << "------------------" << std::endl;
+        // board.board_after_move(m).debug_print(std::cout);
+        // std::cout << "------------------" << std::endl;
     }
     
     moves = board.legal_move_list(BLACK);
     std::cout << "\nBLACK:" << std::endl;
     for(auto & m : moves) {
-        std::cout << "------------------" << std::endl;
+        // std::cout << "------------------" << std::endl;
         std::cout << m.move_name() << std::endl;
-        board.board_after_move(m).debug_print(std::cout);
-        std::cout << "------------------" << std::endl;
+        // board.board_after_move(m).debug_print(std::cout);
+        // std::cout << "------------------" << std::endl;
     }
+
+
+    std::cout << "\nConfiguration FEN representation" << std::endl;
+    Configuration config = Configuration::from_fen("rheakaehr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RHEAKAEHR w 0 1");
+    std::cout << "[2]: " << config.to_fen() << std::endl;
+    std::cout << "[3]: " << config.status() << std::endl;
 
     return 0;
 }

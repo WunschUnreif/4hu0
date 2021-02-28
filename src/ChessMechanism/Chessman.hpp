@@ -24,7 +24,10 @@ enum ChessmanType: uint8_t {
     ROOK,
     CANNON,
     PAWN,
+    ERROR,
 };
+
+bool is_attackable_chessman_type(ChessmanType type);
 
 /**
  * @brief Position of a chessman
@@ -59,9 +62,9 @@ struct Chessman {
 
     /**
      * @brief get all valid move directions. this does not consider other chessmen on the board.
-     * @return std::deque<std::pair<int, int>> a deque of moves of (dx, dy)
+     * @param[out] diffs directions deque. valid moves will append to it
      */
-    std::deque<std::pair<int, int>> valid_move_diffs(ChessmanPosition pos) const;
+    void valid_move_diffs(ChessmanPosition pos, std::deque<std::pair<int, int>> & diffs) const;
 
     /**
      * @brief get the name of the chessman.

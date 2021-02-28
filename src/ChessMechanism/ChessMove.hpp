@@ -14,6 +14,8 @@ struct ChessMove {
 
     ChessMove(ChessmanPosition from, ChessmanPosition to): from(from), to(to) {}
 
+    bool operator==(const ChessMove & rhs) { return from == rhs.from && to == rhs.to; }
+
     /**
      * @brief get the coordinate represent of the move (e.g. 'h2h4')
      * 

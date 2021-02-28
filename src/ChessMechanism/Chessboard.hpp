@@ -2,7 +2,10 @@
 #define CHESSBOARD_HPP
 
 #include "Chessman.hpp"
+#include "ChessMove.hpp"
+
 #include <string.h>
+#include <deque>
 
 namespace cc4huo {
 namespace mech {
@@ -46,7 +49,76 @@ struct Chessboard {
      * @throw std::runtime_error when the FEN string cannot be parsed
      */
     static Chessboard from_fen(const std::string & fen);
+
+    /**
+     * @brief print the board in ascii form to the output stream
+     * 
+     * @param out output stream
+     */
+    void debug_print(std::ostream & out) const;
     
+    /**
+     * @brief Generate the move list for the chessman at the given position
+     *        without checking the target configuration is been checked.
+     * 
+     * @param pos position of the chessman
+     * @return std::deque<ChessMove> valid move for the chessman, or empty if there is no chessman
+     */
+    std::deque<ChessMove> checkless_move_list_for(ChessmanPosition pos) const;
+
+    /**
+     * @brief Generate the move list for a given party without checking 
+     *        the target configuration is been checked.
+     * 
+     * @param party party to generate move list
+     * @return std::deque<ChessMove> valid move list
+     */
+    std::deque<ChessMove> checkless_move_list(Party party) const;
+
+    /**
+     * @brief generate the chessboard after a move
+     * 
+     * @param move the move
+     * @return Chessboard chessboard configuration after the move
+     */
+    Chessboard board_after_move(const ChessMove & move) const;
+
+    /**
+     * @brief Check if the given party is being checked by its opponent in the board configuration
+     * 
+     * @param party the party suspect to be checked
+     * @return true being checked
+     * @return false not being checked
+     */
+    bool is_been_checked(Party party) const;
+
+    /**
+     * @brief generate the legal move list of the given party
+     * 
+     * @param party party to generate legal move list
+     * @return std::deque<ChessMove> legal move list
+     */
+    std::deque<ChessMove> legal_move_list(Party party) const;
+
+// private:
+//!
+    void checkless_filter_move_list(std::deque<ChessMove> & list, ChessmanType type) const;
+
+
+    // These functions requires the move is generated from the valid move list of a chessman,
+    // so the basic validity (isolated legal target) is assumed to be true.
+    //!
+
+    bool checkless_valid_move_for_rook       (const ChessMove & move) const;
+    bool checkless_valid_move_for_horse      (const ChessMove & move) const;
+    bool checkless_valid_move_for_elephant   (const ChessMove & move) const;
+    bool checkless_valid_move_for_advisor    (const ChessMove & move) const;
+    bool checkless_valid_move_for_king       (const ChessMove & move) const;
+    bool checkless_valid_move_for_cannon     (const ChessMove & move) const;
+    bool checkless_valid_move_for_pawn       (const ChessMove & move) const;
+
+
+    ChessmanPosition king_position_of(Party party) const;
 };
 
 }

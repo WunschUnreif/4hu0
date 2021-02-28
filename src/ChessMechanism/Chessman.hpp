@@ -4,16 +4,19 @@
 #include <utility>
 #include <queue>
 #include <string>
+#include <cstdint>
 
 namespace cc4huo {
 namespace mech {
 
-enum Party {
+enum Party: uint8_t {
     BLACK,
     RED
 };
 
-enum ChessmanType {
+Party opponent_party_of(Party party);
+
+enum ChessmanType: uint8_t {
     KING,
     ADVISOR,
     ELEPHANT,
@@ -39,6 +42,8 @@ struct ChessmanPosition {
     std::string position_name() const;
 
     ChessmanPosition operator+ (std::pair<int, int> d) const;
+    bool operator== (const ChessmanPosition & rhs) const { return x == rhs.x && y == rhs.y; }
+    bool operator!= (const ChessmanPosition & rhs) const { return !(*this == rhs); }
 };
 
 /**

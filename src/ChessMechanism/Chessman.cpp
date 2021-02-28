@@ -8,6 +8,14 @@
 namespace cc4huo {
 namespace mech {
 
+// ===---------- Party ----------=== //
+
+Party opponent_party_of(Party party) {
+    if(party == BLACK) return RED;
+    else return BLACK;
+}
+
+
 // ===---------- ChessmanPosition::* ----------=== //
 
 ChessmanPosition ChessmanPosition::operator+ (std::pair<int, int> d) const {
@@ -19,7 +27,7 @@ bool ChessmanPosition::valid() const {
 }
 
 std::string ChessmanPosition::position_name() const {
-    return std::to_string(static_cast<char>('a' + x)) + std::to_string(y);
+    return std::string() + static_cast<char>('a' + x) + std::to_string(y);
 }
 
 
@@ -61,7 +69,27 @@ std::deque<std::pair<int, int>> horse_diffs(ChessmanPosition pos) {
     return diffs;
 }
 
-std::deque<std::pair<int, int>> elephant_diffs(ChessmanPosition pos) {
+bool valid_elephant_target(ChessmanPosition target, Party party) {
+    if(party == RED) {
+        if(target.x % 4 == 0) {
+            return target.y == 2;
+        }
+        if(target.x % 2 == 0) {
+            return target.y == 0 || target.y == 4;
+        }
+        return false;
+    } else {
+        if(target.x % 4 == 0) {
+            return target.y == 7;
+        }
+        if(target.x % 2 == 0) {
+            return target.y == 5 || target.y == 9;
+        }
+        return false;
+    }
+}
+
+std::deque<std::pair<int, int>> elephant_diffs(ChessmanPosition pos, Party party) {
     static int moves [4][2] = {
         { 2, 2}, { 2, -2},
         {-2, 2}, {-2, -2},
@@ -69,9 +97,9 @@ std::deque<std::pair<int, int>> elephant_diffs(ChessmanPosition pos) {
 
     std::deque<std::pair<int, int>> diffs;
 
-    for(int move_index = 0; move_index < 8; ++move_index){
+    for(int move_index = 0; move_index < 4; ++move_index){
         auto d = std::make_pair(moves[move_index][0], moves[move_index][1]);
-        if((pos + d).valid()) {
+        if((pos + d).valid() && valid_elephant_target(pos + d, party)) {
             diffs.push_back(d);
         }
     }
@@ -79,7 +107,27 @@ std::deque<std::pair<int, int>> elephant_diffs(ChessmanPosition pos) {
     return diffs;
 }
 
-std::deque<std::pair<int, int>> advisor_diffs(ChessmanPosition pos) {
+bool valid_advisor_target(ChessmanPosition target, Party party) {
+    if(party == RED) {
+        if(target.x == 4) {
+            return target.y == 1;
+        }
+        if(target.x == 3 || target.x == 5) {
+            return target.y == 0 || target.y == 2;
+        }
+        return false;
+    } else {
+        if(target.x == 4) {
+            return target.y == 8;
+        }
+        if(target.x == 3 || target.x == 5) {
+            return target.y == 7 || target.y == 9;
+        }
+        return false;
+    }
+}
+
+std::deque<std::pair<int, int>> advisor_diffs(ChessmanPosition pos, Party party) {
     static int moves [4][2] = {
         { 1, 1}, { 1, -1},
         {-1, 1}, {-1, -1},
@@ -87,9 +135,9 @@ std::deque<std::pair<int, int>> advisor_diffs(ChessmanPosition pos) {
 
     std::deque<std::pair<int, int>> diffs;
 
-    for(int move_index = 0; move_index < 8; ++move_index){
+    for(int move_index = 0; move_index < 4; ++move_index){
         auto d = std::make_pair(moves[move_index][0], moves[move_index][1]);
-        if((pos + d).valid()) {
+        if((pos + d).valid() && valid_advisor_target(pos + d, party)) {
             diffs.push_back(d);
         }
     }
@@ -97,7 +145,15 @@ std::deque<std::pair<int, int>> advisor_diffs(ChessmanPosition pos) {
     return diffs;
 }
 
-std::deque<std::pair<int, int>> king_diffs(ChessmanPosition pos) {
+bool valid_king_target(ChessmanPosition target, Party party) {
+    if(party == RED) {
+        return target.x >= 3 && target.x <= 5 && target.y >= 0 && target.y <= 2;
+    } else {
+        return target.x >= 3 && target.x <= 5 && target.y >= 7 && target.y <= 9;
+    }
+}
+
+std::deque<std::pair<int, int>> king_diffs(ChessmanPosition pos, Party party) {
     static int moves [4][2] = {
         {1, 0}, {-1,  0},
         {0, 1}, { 0, -1},
@@ -105,9 +161,9 @@ std::deque<std::pair<int, int>> king_diffs(ChessmanPosition pos) {
 
     std::deque<std::pair<int, int>> diffs;
 
-    for(int move_index = 0; move_index < 8; ++move_index){
+    for(int move_index = 0; move_index < 4; ++move_index){
         auto d = std::make_pair(moves[move_index][0], moves[move_index][1]);
-        if((pos + d).valid()) {
+        if((pos + d).valid() && valid_king_target(pos + d, party)) {
             diffs.push_back(d);
         }
     }
@@ -145,9 +201,9 @@ std::deque<std::pair<int, int>> Chessman::valid_move_diffs(ChessmanPosition pos)
     case ROOK       : return rook_cannon_diffs(pos);
     case CANNON     : return rook_cannon_diffs(pos);
     case HORSE      : return horse_diffs(pos);
-    case ELEPHANT   : return elephant_diffs(pos);
-    case ADVISOR    : return advisor_diffs(pos);
-    case KING       : return king_diffs(pos);
+    case ELEPHANT   : return elephant_diffs(pos, party);
+    case ADVISOR    : return advisor_diffs(pos, party);
+    case KING       : return king_diffs(pos, party);
     case PAWN       : return pawn_diffs(pos, party);
 
     default         : throw  std::runtime_error("Invalid chessman");

@@ -77,6 +77,13 @@ struct GameTreeNode: public std::enable_shared_from_this<GameTreeNode> {
      * @return int tree height
      */
     int height() const;
+
+    /**
+     * @brief Get the node count in this subtree.
+     * 
+     * @return int node number.
+     */
+    int node_count() const;
 };
 
 }

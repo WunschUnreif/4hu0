@@ -281,34 +281,96 @@ Chessboard Chessboard::board_after_move(const ChessMove & move) const {
 
 bool Chessboard::is_been_checked_by_rook(Party party, ChessmanPosition king_pos) const {
     auto opponent_party = opponent_party_of(party);
+    int x = king_pos.x, y = king_pos.y;
+    int dx = 1, dy = 1;
 
-    std::deque<ChessMove> moves;
-    checkless_move_list_for(king_pos, moves, ChessmanType::ROOK);
-
-    for(auto & m : moves) {
-        auto piece = board[m.to.x][m.to.y];
-        if(piece.is_chessman && 
-            piece.real_chessman.party == opponent_party && 
-            piece.real_chessman.type == ChessmanType::ROOK) {
-                return true;
+    dx = 1;
+    while(x + dx <= 8) {
+        auto piece = board[x + dx][y];
+        if(piece.is_chessman) {
+            if(piece.real_chessman.party == opponent_party && 
+                piece.real_chessman.type == ChessmanType::ROOK) {
+                    return true;
+            } else {
+                break;
+            }
         }
+        ++dx;
+    }
+
+    dx = -1;
+    while(x + dx >= 0) {
+        auto piece = board[x + dx][y];
+        if(piece.is_chessman) {
+            if(piece.real_chessman.party == opponent_party && 
+                piece.real_chessman.type == ChessmanType::ROOK) {
+                    return true;
+            } else {
+                break;
+            }
+        }
+        --dx;
+    }
+
+    dy = 1;
+    while(y + dy <= 9) {
+        auto piece = board[x][y + dy];
+        if(piece.is_chessman) {
+            if(piece.real_chessman.party == opponent_party && 
+                piece.real_chessman.type == ChessmanType::ROOK) {
+                    return true;
+            } else {
+                break;
+            }
+        }
+        ++dy;
+    }
+
+    dy = -1;
+    while(y + dy >= 0) {
+        auto piece = board[x][y + dy];
+        if(piece.is_chessman) {
+            if(piece.real_chessman.party == opponent_party && 
+                piece.real_chessman.type == ChessmanType::ROOK) {
+                    return true;
+            } else {
+                break;
+            }
+        }
+        --dy;
     }
 
     return false;
 }
 
 bool Chessboard::is_been_checked_by_cannon(Party party, ChessmanPosition king_pos) const {
+    static int diffs [4][2] = {
+        {1, 0}, {-1, 0}, {0, 1}, {0, -1}
+    };
+
     auto opponent_party = opponent_party_of(party);
 
-    std::deque<ChessMove> moves;
-    checkless_move_list_for(king_pos, moves, ChessmanType::CANNON);
+    for(int idx = 0; idx < 4; ++idx) {
+        auto dx = diffs[idx][0], dy = diffs[idx][1];
+        auto d = std::make_pair(dx, dy);
+        auto pos = king_pos + d;
+        bool piece_met = false;
 
-    for(auto & m : moves) {
-        auto piece = board[m.to.x][m.to.y];
-        if(piece.is_chessman && 
-            piece.real_chessman.party == opponent_party && 
-            piece.real_chessman.type == ChessmanType::CANNON) {
-                return true;
+        while(pos.valid()) {
+            const auto & piece = board[pos.x][pos.y];
+            if(board[pos.x][pos.y].is_chessman) {
+                if(piece_met) {
+                    if(piece.real_chessman.party == opponent_party && 
+                        piece.real_chessman.type == ChessmanType::CANNON) {
+                            return true;
+                    } else {
+                        break;;
+                    }
+                } else {
+                    piece_met = true;
+                }
+            }
+            pos = pos + d;
         }
     }
 
@@ -351,13 +413,20 @@ bool Chessboard::is_been_checked_by_pawn(Party party, ChessmanPosition king_pos)
 }
 
 bool Chessboard::is_been_checked_by_horse(Party party, ChessmanPosition king_pos) const {
+    static int moves [8][2] = {
+        { 1, 2}, { 1, -2},
+        {-1, 2}, {-1, -2},
+        { 2, 1}, { 2, -1},
+        {-2, 1}, {-2, -1}
+    };
+
     auto opponent_party = opponent_party_of(party);
 
-    std::deque<std::pair<int, int>> diffs;
-    Chessman(party == RED ? 'H' : 'h').valid_move_diffs(king_pos, diffs);
-
-    for(auto d : diffs) {
+    for(int idx = 0; idx < 8; ++idx) {
+        auto d = std::make_pair(moves[idx][0], moves[idx][1]);
         ChessmanPosition target = king_pos + d;
+        if(target.valid() == false) continue;
+        
         int leg_dx = abs(d.first)  == 2  ? d.first / 2 : d.first;
         int leg_dy = abs(d.second) == 2 ? d.second / 2 : d.second;
         ChessmanPosition leg = king_pos + std::make_pair(leg_dx, leg_dy);

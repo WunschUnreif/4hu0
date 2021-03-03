@@ -31,24 +31,27 @@ void GameTreeNode::back_propagate(bool winned) {
 }
 
 void GameTreeNode::expand() {
-    static std::default_random_engine engine;
-    static bool seeded = false;
-
-    if(seeded == false) {
-        engine.seed(time(NULL));
-        seeded = true;
+    if(legal_moves.size() == 0) {
+        auto status = configuration.status();
+        if((status == mech::RED_WIN && root_party == mech::RED) ||
+            (status == mech::BLACK_WIN && root_party == mech::BLACK)
+        ) {
+            back_propagate(true);
+        } else {
+            back_propagate(false);
+        }
+        return;
     }
 
-    std::uniform_int_distribution<int> distrb(0, legal_moves.size() - 1);
-    auto choice = distrb(engine);
-
-    auto edge = GameTreeEdge(shared_from_this(), legal_moves[choice]);
+    auto edge = GameTreeEdge(shared_from_this(), legal_moves[0]);
     edges.push_back(edge);
-    legal_moves.erase(legal_moves.begin() + choice);
+    legal_moves.erase(legal_moves.begin());
 
     auto child = edge.child;
     
-    child->simulate();
+    // for(int i = 0; i < 20; ++i) {
+        child->simulate();
+    // }
 }
 
 void GameTreeNode::simulate() {
@@ -63,20 +66,46 @@ void GameTreeNode::simulate() {
     auto config = configuration;
 
     while(true) {
-        auto move_list = config.legal_move_list();
+        std::deque<mech::ChessMove> move_list;
+        config.board.checkless_move_list(config.active_party, move_list);
 
         if( move_list.size() == 0 || 
             config.board.attackable_chessman_count() == 0 ||
+            config.board.chessman_count(mech::KING, mech::RED) == 0 ||
+            config.board.chessman_count(mech::KING, mech::BLACK) == 0 ||
             config.neutral_steps >= 60
         ) break;
 
-        std::uniform_int_distribution<int> distrb(0, move_list.size() - 1);
-        auto choice = move_list[distrb(rand_engine)];
+        mech::ChessMove choice = move_list[0];
+
+        while(true) {
+            if(move_list.size() == 0) {
+                goto L_FAILED;
+            }
+
+            std::uniform_int_distribution<int> distrb(0, move_list.size() - 1);
+            auto choice_it = move_list.begin() + distrb(rand_engine);
+            choice = *choice_it;
+
+            if(config.configuration_after_legal_move(choice).board.is_been_checked(config.active_party)) {
+                move_list.erase(choice_it);
+                continue;
+            }
+
+            break;
+        }
 
         config.commit_legal_move(choice);
     }
 
+L_FAILED:
     auto status = config.status();
+
+    if(status == mech::ACTIVE) {
+        std::cout << (config.active_party == mech::RED) << std::endl;
+        config.board.debug_print(std::cout);
+        throw std::runtime_error("[GameTreeNode::simulate] False Failure.");
+    }
 
     if((status == mech::RED_WIN && root_party == mech::RED) ||
         (status == mech::BLACK_WIN && root_party == mech::BLACK)
@@ -97,6 +126,14 @@ int GameTreeNode::height() const {
         max_height = std::max(max_height, e.child->height());
     }
     return max_height + 1;
+}
+
+int GameTreeNode::node_count() const {
+    int nodes = 1;
+    for(auto & e : edges) {
+        nodes += e.child->node_count();
+    }
+    return nodes;
 }
 
 }

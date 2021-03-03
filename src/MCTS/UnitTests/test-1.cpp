@@ -7,7 +7,7 @@
 using namespace cc4huo;
 
 mech::ChessMove search(const mech::Configuration & config) {
-    mcts::GameTreeNode::TreePolicy policy = mcts::gen_ucb_policy(1.414);
+    static mcts::GameTreeNode::TreePolicy policy = mcts::gen_ucb_policy(1.414);
     auto game_tree = std::make_shared<mcts::GameTreeNode>(config);
     game_tree->parent = game_tree;
 
@@ -19,31 +19,42 @@ mech::ChessMove search(const mech::Configuration & config) {
         std::chrono::steady_clock::time_point time_end = std::chrono::steady_clock::now();
         std::chrono::duration<double> time_used = std::chrono::duration_cast<std::chrono::duration<double>>(time_end - time_start);
         
-        if (time_used.count() >= 120) {
+        if (time_used.count() >= 15) {
             break;
         }
 
+        // std::cout << "select" << std::endl;
         auto selection = game_tree->select(policy);
+        // std::cout << "selected" << std::endl;
         selection->expand();
     }
 
-    double max_win = 0;
+    int max_visit = 0;
+    double win = 0;
     mech::ChessMove move(mech::ChessmanPosition(0, 0), mech::ChessmanPosition(0, 0));
 
     for(auto & e : game_tree->edges) {
-        auto win = static_cast<double>(e.child->win_count) / (e.child->access_count == 0 ? 1 : e.child->access_count);
-        if(win > max_win) {
-            max_win = win;
+        auto visit = e.child->access_count;
+        if(visit > max_visit) {
+            max_visit = visit;
             move = e.move;
+            win = static_cast<double>(e.child->win_count) / e.child->access_count;
         }
     }
 
-    std::cout << "Search tree height = " << game_tree->height() << ", winning prob = " << max_win << std::endl;
+    std::cout   << "Search tree height = " << game_tree->height()
+                << ", tree size = " << game_tree->node_count()
+                << ", visit = " << max_visit
+                << ", winning prob = " << win << std::endl;
 
     return move;
 }
 
 int main() {
+    // std::cout << "input fen" << std::endl;
+    // std::string fen;
+    // std::getline(std::cin, fen);
+
     mech::Game game = mech::Game::new_game();
 
     while(game.is_ended() == false) {

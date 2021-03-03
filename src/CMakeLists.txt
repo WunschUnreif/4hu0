@@ -4,6 +4,7 @@ project(4hu0)
 set(CMAKE_EXPORT_COMPILE_COMMANDS true)
 
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_FLAGS "-O2")
 
 
 # find_package(Torch REQUIRED PATHS ../third/libtorch/)

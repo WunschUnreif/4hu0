@@ -4,7 +4,7 @@ project(4hu0)
 set(CMAKE_EXPORT_COMPILE_COMMANDS true)
 
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "-O2")
+set(CMAKE_CXX_FLAGS "-O2 -g")
 
 
 # find_package(Torch REQUIRED PATHS ../third/libtorch/)
@@ -20,3 +20,5 @@ set(CMAKE_CXX_FLAGS "-O2")
 
 add_subdirectory(ChessMechanism)
 add_subdirectory(MCTS)
+add_subdirectory(XBoardComm)
+

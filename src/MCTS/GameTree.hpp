@@ -5,6 +5,7 @@
 
 #include <deque>
 #include <memory>
+#include <iostream>
 #include <functional>
 
 namespace cc4huo {
@@ -16,7 +17,7 @@ struct GameTreeEdge {
     mech::ChessMove move;
     std::shared_ptr<GameTreeNode> child;
 
-    GameTreeEdge(std::weak_ptr<GameTreeNode> from, const mech::ChessMove & move);
+    GameTreeEdge(std::shared_ptr<GameTreeNode> from, const mech::ChessMove & move);
 };
 
 struct GameTreeNode: public std::enable_shared_from_this<GameTreeNode> {
@@ -27,6 +28,8 @@ struct GameTreeNode: public std::enable_shared_from_this<GameTreeNode> {
     std::deque<GameTreeEdge> edges;
     mech::Party root_party;
     std::deque<mech::ChessMove> legal_moves;
+    bool is_always_win = false;
+    int always_win_child_count = 0;
 
     using TreePolicy = std::function<std::shared_ptr<GameTreeNode>(std::shared_ptr<GameTreeNode>)>;
 
@@ -36,7 +39,14 @@ struct GameTreeNode: public std::enable_shared_from_this<GameTreeNode> {
         , win_count(0)
         , parent()
         , root_party(config.active_party)
-        , legal_moves(config.legal_move_list()) {}
+        , legal_moves(config.legal_move_list()) {
+            auto status = configuration.status();
+            if((status == mech::RED_WIN && root_party == mech::RED) ||
+                (status == mech::BLACK_WIN && root_party == mech::BLACK)
+            ) {
+                is_always_win = true;
+            }
+        }
 
     GameTreeNode(const mech::Configuration & config, std::weak_ptr<GameTreeNode> parent)
         : configuration(config)
@@ -44,7 +54,15 @@ struct GameTreeNode: public std::enable_shared_from_this<GameTreeNode> {
         , win_count(0)
         , parent(parent)
         , root_party(parent.lock()->root_party)
-        , legal_moves(config.legal_move_list()) {}
+        , legal_moves(config.legal_move_list()) {
+            auto status = configuration.status();
+            if((status == mech::RED_WIN && root_party == mech::RED) ||
+                (status == mech::BLACK_WIN && root_party == mech::BLACK)
+            ) {
+                is_always_win = true;
+                parent.lock()->notify_always_win();
+            }
+        }
 
     /**
      * @brief Propagate the winning info back to root
@@ -52,6 +70,11 @@ struct GameTreeNode: public std::enable_shared_from_this<GameTreeNode> {
      * @param winned the simulation result is winning or not
      */
     void back_propagate(bool winned);
+
+    /**
+     * @brief Notify the current node that it has an always-winning child node.
+     */
+    void notify_always_win();
 
     /**
      * @brief expand a child to this node, will do simulate

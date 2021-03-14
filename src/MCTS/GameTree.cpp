@@ -8,8 +8,18 @@
 namespace cc4huo {
 namespace mcts {
 
-GameTreeEdge::GameTreeEdge(std::weak_ptr<GameTreeNode> from, const mech::ChessMove & move): move(move) {
-    child = std::make_shared<GameTreeNode>(from.lock()->configuration.configuration_after_legal_move(move), from);
+GameTreeEdge::GameTreeEdge(std::shared_ptr<GameTreeNode> from, const mech::ChessMove & move): move(move) {
+    child = std::make_shared<GameTreeNode>(from->configuration.configuration_after_legal_move(move), from);
+}
+
+void GameTreeNode::notify_always_win() {
+    ++always_win_child_count;
+    if(always_win_child_count == edges.size() && legal_moves.empty()) {
+        is_always_win = true;
+        if(parent.lock() != shared_from_this()) {
+            parent.lock()->notify_always_win();
+        }
+    }
 }
 
 void GameTreeNode::back_propagate(bool winned) {
@@ -36,6 +46,7 @@ void GameTreeNode::expand() {
         if((status == mech::RED_WIN && root_party == mech::RED) ||
             (status == mech::BLACK_WIN && root_party == mech::BLACK)
         ) {
+            std::cout << "Impossible" << std::endl;
             back_propagate(true);
         } else {
             back_propagate(false);
@@ -44,13 +55,14 @@ void GameTreeNode::expand() {
     }
 
     auto edge = GameTreeEdge(shared_from_this(), legal_moves[0]);
+
     edges.push_back(edge);
     legal_moves.erase(legal_moves.begin());
 
     auto child = edge.child;
     
     // for(int i = 0; i < 20; ++i) {
-        child->simulate();
+    child->simulate();
     // }
 }
 

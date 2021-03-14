@@ -19,14 +19,21 @@ mech::ChessMove search(const mech::Configuration & config) {
         std::chrono::steady_clock::time_point time_end = std::chrono::steady_clock::now();
         std::chrono::duration<double> time_used = std::chrono::duration_cast<std::chrono::duration<double>>(time_end - time_start);
         
-        if (time_used.count() >= 15) {
+        if (time_used.count() >= 60) {
             break;
         }
 
         // std::cout << "select" << std::endl;
         auto selection = game_tree->select(policy);
+
+        if(selection->is_always_win) {
+            std::cout << "root is always win" << std::endl;
+            break;
+        }
+        
         // std::cout << "selected" << std::endl;
         selection->expand();
+        // std::cout << "expanded" << std::endl;
     }
 
     int max_visit = 0;
@@ -35,6 +42,13 @@ mech::ChessMove search(const mech::Configuration & config) {
 
     for(auto & e : game_tree->edges) {
         auto visit = e.child->access_count;
+        if(e.child->is_always_win) {
+            std::cout   << "Search tree height = " << game_tree->height()
+                << ", tree size = " << game_tree->node_count()
+                << ", always win!" << std::endl;
+            return e.move;
+        }
+
         if(visit > max_visit) {
             max_visit = visit;
             move = e.move;
@@ -51,11 +65,11 @@ mech::ChessMove search(const mech::Configuration & config) {
 }
 
 int main() {
-    // std::cout << "input fen" << std::endl;
-    // std::string fen;
-    // std::getline(std::cin, fen);
+    std::cout << "input fen" << std::endl;
+    std::string fen;
+    std::getline(std::cin, fen);
 
-    mech::Game game = mech::Game::new_game();
+    mech::Game game = mech::Game::new_game_from_fen(fen);
 
     while(game.is_ended() == false) {
         auto move = search(game.current_configuration());

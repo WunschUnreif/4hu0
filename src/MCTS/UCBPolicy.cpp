@@ -31,6 +31,10 @@ std::shared_ptr<GameTreeNode> choose_node(std::shared_ptr<GameTreeNode> from, do
         return from;
     }
 
+    if(from->is_always_win) {
+        return from;
+    }
+
     // if(from->configuration.status() != mech::ACTIVE) {
     //     throw std::runtime_error("[choose_node]: error");
     // }
@@ -43,17 +47,22 @@ std::shared_ptr<GameTreeNode> choose_node(std::shared_ptr<GameTreeNode> from, do
     // std::cout << "ucb's: " << "[" << C << "] ";
     
     for(auto & edge : from->edges) {
-        // if(edge.child->configuration.status() == mech::ACTIVE) {
+        if(edge.child->is_always_win == false) {
             auto ucb = calculate_ucb(edge.child, C);
             // std::cout << edge.move.move_name() << "=" << ucb << ' ';
             if(ucb > max_ucb) {
                 max_ucb = ucb;
                 choice = edge.child;
             }
-        // }
+        }
     }
 
     // std::cout << std::endl;
+
+    if(choice == nullptr) {
+        std::cout << "[choose_node] Cannot choose!" << std::endl;
+        return from;
+    }
 
     return choose_node(choice, C);
 }

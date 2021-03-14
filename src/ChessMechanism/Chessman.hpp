@@ -74,6 +74,10 @@ struct Chessman {
     char chessman_name() const;
 };
 
+bool valid_elephant_target(ChessmanPosition target, Party party);
+bool valid_advisor_target(ChessmanPosition target, Party party);
+bool valid_king_target(ChessmanPosition target, Party party);
+
 } // mech
 } // cc4huo
 

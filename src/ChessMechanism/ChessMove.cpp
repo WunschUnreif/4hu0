@@ -84,38 +84,18 @@ MoveEncoder::MoveEncoder() {
         }
     }
 
-    // Generate moves for king
-    for(int x = 0; x < 9; ++x) {
-        for(int y = 0; y < 10; ++y) {
-            if(valid_king_target(ChessmanPosition(x, y), RED)) {
-                std::deque<std::pair<int, int>> diffs;
-                Chessman('K').valid_move_diffs(ChessmanPosition(x, y), diffs);
-                for(auto & d : diffs) {
-                    LEGAL_MOVE_TABLES.emplace_back(ChessmanPosition(x, y), ChessmanPosition(x, y) + d);
-                }
-            } else if(valid_king_target(ChessmanPosition(x, y), BLACK)) {
-                std::deque<std::pair<int, int>> diffs;
-                Chessman('k').valid_move_diffs(ChessmanPosition(x, y), diffs);
-                for(auto & d : diffs) {
-                    LEGAL_MOVE_TABLES.emplace_back(ChessmanPosition(x, y), ChessmanPosition(x, y) + d);
-                }
-            }
-        }
-    }
-
     TABLE_INITED = true;
 }
 
 int MoveEncoder::encode(const ChessMove & move) {
     int code = 0;
-    // std::cout << move.move_name() << LEGAL_MOVE_TABLES.size() << std::endl;
     for(const auto & m : LEGAL_MOVE_TABLES) {
         if(m == move) {
             return code;
         }
         ++code;
     }
-    return -1;
+    throw std::runtime_error("[MoveEncoder::encode] Illegal move.");
 }
 
 ChessMove MoveEncoder::decode(int code) {

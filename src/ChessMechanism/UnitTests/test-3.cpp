@@ -52,7 +52,7 @@ void run() {
 
         game.commit_legal_move(choice);
 
-        std::cout << enc->encode(choice) << std::endl;
+        enc->encode(choice);
 
         ++count;
     }
@@ -62,7 +62,7 @@ void run() {
 
 int main() {
     enc = new MoveEncoder();
-    // std::cout << enc->TABLE_INITED << ' ' << enc->LEGAL_MOVE_TABLES.size() << std::endl;
+    std::cout << enc->TABLE_INITED << ' ' << enc->LEGAL_MOVE_TABLES.size() << std::endl;
 
     for(int i = 0; i < 10; ++i) {
         run();

@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "-O2 -g")
 
 
-# find_package(Torch REQUIRED PATHS ../third/libtorch/)
+find_package(Torch REQUIRED PATHS ../third/libtorch/)
 
 # add_executable(main main.cpp)
 # target_link_libraries(main ${TORCH_LIBRARIES})
@@ -21,4 +21,5 @@ set(CMAKE_CXX_FLAGS "-O2 -g")
 add_subdirectory(ChessMechanism)
 add_subdirectory(MCTS)
 add_subdirectory(XBoardComm)
+add_subdirectory(NeuralModels)
 

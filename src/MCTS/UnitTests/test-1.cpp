@@ -19,7 +19,7 @@ mech::ChessMove search(const mech::Configuration & config) {
         std::chrono::steady_clock::time_point time_end = std::chrono::steady_clock::now();
         std::chrono::duration<double> time_used = std::chrono::duration_cast<std::chrono::duration<double>>(time_end - time_start);
         
-        if (time_used.count() >= 60) {
+        if (time_used.count() >= 5) {
             break;
         }
 

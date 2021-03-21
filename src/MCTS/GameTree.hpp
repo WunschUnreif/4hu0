@@ -11,6 +11,8 @@
 namespace cc4huo {
 namespace mcts {
 
+void shuffle_moves(std::deque<mech::ChessMove> & legal_moves);
+
 struct GameTreeNode;
 
 struct GameTreeEdge {
@@ -40,6 +42,7 @@ struct GameTreeNode: public std::enable_shared_from_this<GameTreeNode> {
         , parent()
         , root_party(config.active_party)
         , legal_moves(config.legal_move_list()) {
+            shuffle_moves(legal_moves);
             auto status = configuration.status();
             if((status == mech::RED_WIN && root_party == mech::RED) ||
                 (status == mech::BLACK_WIN && root_party == mech::BLACK)
@@ -55,6 +58,7 @@ struct GameTreeNode: public std::enable_shared_from_this<GameTreeNode> {
         , parent(parent)
         , root_party(parent.lock()->root_party)
         , legal_moves(config.legal_move_list()) {
+            shuffle_moves(legal_moves);
             auto status = configuration.status();
             if((status == mech::RED_WIN && root_party == mech::RED) ||
                 (status == mech::BLACK_WIN && root_party == mech::BLACK)

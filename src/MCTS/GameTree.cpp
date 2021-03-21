@@ -4,9 +4,14 @@
 #include <random>
 #include <ctime>
 #include <iostream>
+#include <algorithm>
 
 namespace cc4huo {
 namespace mcts {
+
+void shuffle_moves(std::deque<mech::ChessMove> & legal_moves) {
+    std::shuffle(legal_moves.begin(), legal_moves.end(), std::default_random_engine(time(NULL)));
+}
 
 GameTreeEdge::GameTreeEdge(std::shared_ptr<GameTreeNode> from, const mech::ChessMove & move): move(move) {
     child = std::make_shared<GameTreeNode>(from->configuration.configuration_after_legal_move(move), from);

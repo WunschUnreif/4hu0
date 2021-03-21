@@ -1,4 +1,12 @@
 add_executable(ut-nnmodel-1 test-1.cpp)
-target_link_libraries(ut-nnmodel-1 NeuralModel ChessMechanism)
+target_link_libraries(ut-nnmodel-1 NeuralModel)
 target_include_directories(ut-nnmodel-1 PUBLIC "./" "../")
+
+add_executable(ut-nnmodel-2 test-2.cpp)
+target_link_libraries(ut-nnmodel-2 NeuralModel)
+target_include_directories(ut-nnmodel-2 PUBLIC "./" "../")
+
+add_executable(ut-nnmodel-3-self-play test-3.cpp)
+target_link_libraries(ut-nnmodel-3-self-play NeuralModel)
+target_include_directories(ut-nnmodel-3-self-play PUBLIC "./" "../")
 

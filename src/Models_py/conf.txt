@@ -1,5 +1,5 @@
 Model(
-  (conv): Conv2d(45, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  (conv): Conv2d(15, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
   (relu): ReLU()
   (resmods): Sequential(
     (0): ResModule(
@@ -123,4 +123,5 @@ Model(
     (tanh): Tanh()
   )
 )
-{'Total': 10348391, 'Trainable': 10348391}
+{'Total': 10313831, 'Trainable': 10313831}
+torch.Size([1, 2086]) torch.Size([1, 1]) tensor([[-0.0270]], grad_fn=<TanhBackward>)

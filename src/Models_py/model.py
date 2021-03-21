@@ -52,7 +52,7 @@ class ValueHead(torch.nn.Module):
 class Model(torch.nn.Module):
     def __init__(self):
         super(Model, self).__init__()
-        self.conv = torch.nn.Conv2d(45, 128, 3, 1, 1)
+        self.conv = torch.nn.Conv2d(15, 128, 3, 1, 1)
         self.relu = torch.nn.ReLU()
         self.resmods = torch.nn.Sequential(*[ResModule() for i in range(13)])
 
@@ -75,9 +75,11 @@ class Model(torch.nn.Module):
         return {'Total': total_num, 'Trainable': trainable_num}
 
 def test():
-    x = torch.zeros((1, 45, 9, 10), dtype=torch.float32)
+    x = torch.zeros((1, 15, 9, 10), dtype=torch.float32)
     net = Model()
     print(net)
     print(net.param_num())
     p, v = net(x)
     print(p.size(), v.size(), v)
+
+test()

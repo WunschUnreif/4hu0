@@ -1,4 +1,5 @@
 #include <sstream>
+#include <iostream>
 
 #include "SelfPlayData.hpp"
 

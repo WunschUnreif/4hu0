@@ -10,3 +10,7 @@ add_executable(ut-nnmodel-3-self-play test-3.cpp)
 target_link_libraries(ut-nnmodel-3-self-play NeuralModel)
 target_include_directories(ut-nnmodel-3-self-play PUBLIC "./" "../")
 
+add_executable(ut-nnmodel-4-data-loader test-4.cpp)
+target_link_libraries(ut-nnmodel-4-data-loader NeuralModel)
+target_include_directories(ut-nnmodel-4-data-loader PUBLIC "./" "../")
+

@@ -65,13 +65,14 @@ torch::Tensor ValueHead::forward(torch::Tensor x) {
             )
         )
     );
+    auto ce = torch::nn::CrossEntropyLoss();
 }
 
 Model::Model()
     : conv(register_module(
         "conv", 
         torch::nn::Conv2d(
-            torch::nn::Conv2dOptions(45, 128, 3).stride(1).padding(1)
+            torch::nn::Conv2dOptions(15, 128, 3).stride(1).padding(1)
         )))
     , bn(register_module("bn", torch::nn::BatchNorm2d(128)))
     , policy(register_module("policy", std::make_shared<PolicyHead>()))

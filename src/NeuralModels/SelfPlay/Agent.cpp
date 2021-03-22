@@ -16,9 +16,9 @@ void softmax_to_distribution(std::vector<SelfPlayData::MoveProb> & distribution)
     }
     for(auto & moveprob : distribution) {
         moveprob.second = expf(20.0 * pow(moveprob.second, temperature)) / normalize_denominator;
-        std::cout << moveprob.second << std::endl;
+        // std::cout << moveprob.second << std::endl;
     }
-    std::cout << normalize_denominator << std::endl;
+    // std::cout << normalize_denominator << std::endl;
 }
 
 mech::ChessMove max_from_distribution(std::vector<SelfPlayData::MoveProb> & distribution) {
@@ -67,7 +67,7 @@ std::vector<SelfPlayData> Agent::play() {
 
     mech::Game game = mech::Game::new_game();
     while(!game.is_ended()) {
-        game.current_configuration().board.debug_print(std::cout);
+        // game.current_configuration().board.debug_print(std::cout);
         result.emplace_back();
         result.back().config = game.current_configuration();
         this->evaluate(game.current_configuration(), result.back().distribution);

@@ -60,7 +60,7 @@ Chessboard Chessboard::from_fen(const std::string & fen) {
 
             auto fen_char = fen[fen_read_pointer++];
 
-            if(isnumber(fen_char)) {
+            if(isdigit(fen_char)) {
                 x += fen_char - '0' - 1;
             } else {
                 Chessman piece(fen_char);

@@ -15,9 +15,9 @@ struct Trainer {
  
     torch::optim::SGD optimizer;
 
-    Model & model;
+    Model model;
 
-    Trainer(Model & model, double lr = 0.001, double momentum = 0.9, double weight_decay = 1e-5);
+    Trainer(Model model, double lr = 0.001, double momentum = 0.9, double weight_decay = 1e-5);
 
     /**
      * @brief Train the model with a batch

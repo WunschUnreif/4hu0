@@ -68,7 +68,7 @@ torch::Tensor ValueHead::forward(torch::Tensor x) {
     auto ce = torch::nn::CrossEntropyLoss();
 }
 
-Model::Model()
+ModelImpl::ModelImpl()
     : conv(register_module(
         "conv", 
         torch::nn::Conv2d(
@@ -90,7 +90,7 @@ Model::Model()
     ));
 }
 
-std::pair<torch::Tensor, torch::Tensor> Model::forward(torch::Tensor x) {
+std::pair<torch::Tensor, torch::Tensor> ModelImpl::forward(torch::Tensor x) {
     torch::Tensor after_res = resmods->forward(relu(bn(conv(x))));
     return std::make_pair(policy->forward(after_res), value->forward(after_res));
 }

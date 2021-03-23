@@ -40,8 +40,8 @@ private:
     torch::nn::Tanh tanh;
 };
 
-struct Model: public torch::nn::Module {
-    Model();
+struct ModelImpl: public torch::nn::Module {
+    ModelImpl();
     std::pair<torch::Tensor, torch::Tensor> forward(torch::Tensor x);
 
 private:
@@ -52,6 +52,8 @@ private:
     std::shared_ptr<PolicyHead> policy;
     std::shared_ptr<ValueHead> value;
 };
+
+TORCH_MODULE(Model);
 
 }
 }

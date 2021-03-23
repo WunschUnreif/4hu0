@@ -3,13 +3,13 @@
 namespace cc4huo {
 namespace nnmodel {
 
-Trainer::Trainer(Model & model, double lr, double momentum, double weight_decay)
+Trainer::Trainer(Model model, double lr, double momentum, double weight_decay)
     : learning_rate(lr)
     , momentum(momentum)
     , weight_decay(weight_decay)
     , model(model)
     , optimizer(
-        model.parameters(), 
+        model->parameters(), 
         torch::optim::SGDOptions(lr)
             .momentum(momentum)
             .weight_decay(weight_decay)
@@ -17,13 +17,13 @@ Trainer::Trainer(Model & model, double lr, double momentum, double weight_decay)
     , cuda(torch::cuda::is_available())
 {
     if(cuda) {
-        model.to(torch::kCUDA);
+        model->to(torch::kCUDA);
     }
 }
 
 torch::Tensor Trainer::calc_l2_loss() {
     torch::Tensor loss = torch::tensor(0.0).to(cuda ? torch::kCUDA : torch::kCPU);
-    auto params = model.parameters();
+    auto params = model->parameters();
     for(auto it = params.begin(); it != params.end(); ++it) {
         loss += torch::norm(*it, 2);
     }
@@ -46,7 +46,7 @@ double Trainer::train(std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> ba
         std::get<2>(batch_data) = std::get<2>(batch_data).cuda();
     }
 
-    auto net_output = model.forward(std::get<0>(batch_data));
+    auto net_output = model->forward(std::get<0>(batch_data));
     // std::cout << net_output.first.size(0) << std::endl;
     // std::cout << std::get<1>(batch_data) << std::endl;
     

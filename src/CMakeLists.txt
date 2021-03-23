@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 project(4hu0)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS true)
@@ -20,6 +20,6 @@ find_package(Torch REQUIRED PATHS ../third/libtorch/)
 
 add_subdirectory(ChessMechanism)
 add_subdirectory(MCTS)
-add_subdirectory(XBoardComm)
+# add_subdirectory(XBoardComm)
 add_subdirectory(NeuralModels)
 

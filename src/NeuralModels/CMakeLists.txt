@@ -1,6 +1,7 @@
 add_library(NeuralModel 
     NeuralModel.cpp
     DataLoader.cpp
+    Trainer.cpp
     SelfPlay/AgentPureMCTS.cpp
     SelfPlay/SelfPlayData.cpp
     SelfPlay/Agent.cpp

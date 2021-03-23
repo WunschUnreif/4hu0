@@ -123,16 +123,16 @@ torch::Tensor SelfPlayDataSet::get_next_layers() {
 }
 
 torch::Tensor SelfPlayDataSet::get_next_distrb() {
-    torch::Tensor distrb = torch::zeros({1, 2086});
+    torch::Tensor distrb = torch::zeros({2086});
     for(auto & moveprob : data_iter->distribution) {
-        distrb[0][moveprob.first] = moveprob.second;
+        distrb[moveprob.first] = moveprob.second;
     }
     return distrb;
 }
 
 torch::Tensor SelfPlayDataSet::get_next_result() {
-    torch::Tensor result = torch::zeros({1, 1});
-    result[0][0] = data_iter->value;
+    torch::Tensor result = torch::zeros({1});
+    result[0] = data_iter->value;
     return result;
 }
 

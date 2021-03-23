@@ -1,4 +1,5 @@
 import torch 
+import time 
 
 class ResModule(torch.nn.Module):
     def __init__(self):
@@ -54,7 +55,7 @@ class Model(torch.nn.Module):
         super(Model, self).__init__()
         self.conv = torch.nn.Conv2d(15, 128, 3, 1, 1)
         self.relu = torch.nn.ReLU()
-        self.resmods = torch.nn.Sequential(*[ResModule() for i in range(13)])
+        self.resmods = torch.nn.Sequential(*[ResModule() for i in range(7)])
 
         self.policy = PolicyHead()
         self.value = ValueHead()
@@ -79,7 +80,13 @@ def test():
     net = Model()
     print(net)
     print(net.param_num())
-    p, v = net(x)
+
+    start = time.time()
+    for i in range(100):
+        p, v = net(x)
+    end = time.time()
+    elapsed = (end - start) * 1000
+    print("elapsed: ", elapsed)
     print(p.size(), v.size(), v)
 
 test()

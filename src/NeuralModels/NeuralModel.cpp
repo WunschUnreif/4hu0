@@ -75,6 +75,7 @@ Model::Model()
             torch::nn::Conv2dOptions(15, 128, 3).stride(1).padding(1)
         )))
     , bn(register_module("bn", torch::nn::BatchNorm2d(128)))
+    , relu(register_module("relu", torch::nn::ReLU(torch::nn::ReLUOptions())))
     , policy(register_module("policy", std::make_shared<PolicyHead>()))
     , value(register_module("value", std::make_shared<ValueHead>()))
 {
@@ -82,10 +83,10 @@ Model::Model()
         ResBlock(), ResBlock(),
         ResBlock(), ResBlock(),
         ResBlock(), ResBlock(),
+        ResBlock() /*, ResBlock(),
         ResBlock(), ResBlock(),
         ResBlock(), ResBlock(),
-        ResBlock(), ResBlock(),
-        ResBlock()
+        ResBlock()*/
     ));
 }
 

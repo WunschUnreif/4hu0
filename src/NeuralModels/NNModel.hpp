@@ -7,5 +7,6 @@
 #include "SelfPlay/Agent.hpp"
 #include "SelfPlay/SelfPlayData.hpp"
 #include "SelfPlay/AgentPureMCTS.hpp"
+#include "SelfPlay/AgentNeural.hpp"
 
 #endif // !NNMODEL_HPP

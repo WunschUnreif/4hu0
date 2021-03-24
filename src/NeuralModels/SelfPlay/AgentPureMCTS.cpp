@@ -6,7 +6,7 @@
 namespace cc4huo {
 namespace nnmodel {
 
-void AgentPureMCTS::evaluate(const mech::Configuration & config, std::vector<SelfPlayData::MoveProb> & distribution) {
+void AgentPureMCTS::evaluate(const mech::Configuration & config, std::deque<SelfPlayData::MoveProb> & distribution) {
     static mcts::GameTreeNode::TreePolicy policy = mcts::gen_ucb_policy(1.414);
     static mech::MoveEncoder encoder;
 

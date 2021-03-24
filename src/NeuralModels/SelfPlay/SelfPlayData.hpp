@@ -2,7 +2,7 @@
 #define SELF_PLAY_DATA_HPP
 
 #include <utility>
-#include <vector>
+#include <queue>
 
 #include "ChessMechanism.hpp"
 
@@ -13,7 +13,7 @@ struct SelfPlayData {
     using MoveProb = std::pair<int, float>; // Pr[ first <as move code> ] = second <as probability>
 
     mech::Configuration config = mech::Configuration::init_config();
-    std::vector<MoveProb> distribution;
+    std::deque<MoveProb> distribution;
 
     /// 1 = red win, -1 = black win, 0 = tie
     int value;

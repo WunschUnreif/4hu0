@@ -8,7 +8,7 @@
 namespace cc4huo {
 namespace nnmodel {
 
-void softmax_to_distribution(std::vector<SelfPlayData::MoveProb> & distribution) {
+void softmax_to_distribution(std::deque<SelfPlayData::MoveProb> & distribution) {
     double normalize_denominator = 0;
     const double temperature = 0.5;
     for(auto & moveprob : distribution) {
@@ -21,7 +21,7 @@ void softmax_to_distribution(std::vector<SelfPlayData::MoveProb> & distribution)
     // std::cout << normalize_denominator << std::endl;
 }
 
-mech::ChessMove max_from_distribution(std::vector<SelfPlayData::MoveProb> & distribution) {
+mech::ChessMove max_from_distribution(std::deque<SelfPlayData::MoveProb> & distribution) {
     static mech::MoveEncoder encoder;
     
     float max = 0;
@@ -36,7 +36,7 @@ mech::ChessMove max_from_distribution(std::vector<SelfPlayData::MoveProb> & dist
     return encoder.decode(sample);
 }
 
-mech::ChessMove sample_from_distribution(std::vector<SelfPlayData::MoveProb> distribution) {
+mech::ChessMove sample_from_distribution(std::deque<SelfPlayData::MoveProb> distribution) {
     static std::default_random_engine e(time(NULL));
     static mech::MoveEncoder encoder;
 
@@ -67,11 +67,11 @@ std::vector<SelfPlayData> Agent::play() {
 
     mech::Game game = mech::Game::new_game();
     while(!game.is_ended()) {
-        // game.current_configuration().board.debug_print(std::cout);
+        game.current_configuration().board.debug_print(std::cout);
         result.emplace_back();
         result.back().config = game.current_configuration();
         this->evaluate(game.current_configuration(), result.back().distribution);
-        softmax_to_distribution(result.back().distribution);
+        // softmax_to_distribution(result.back().distribution);
         auto move = sample_from_distribution(result.back().distribution);
         game.commit_legal_move(move);
     }

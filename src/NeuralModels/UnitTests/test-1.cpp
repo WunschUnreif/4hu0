@@ -4,7 +4,7 @@
 #include "NeuralModel.hpp"
 
 int main() {
-    auto x = torch::rand({1, 15, 9, 10});
+    auto x = torch::rand({20, 15, 9, 10});
     cc4huo::nnmodel::Model mod;
     std::cout << *mod << std::endl;
 

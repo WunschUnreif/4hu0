@@ -8,7 +8,7 @@ namespace cc4huo {
 namespace nnmodel {
 
 struct AgentPureMCTS : public Agent {
-    virtual void evaluate(const mech::Configuration & config, std::vector<SelfPlayData::MoveProb> & distribution) override;
+    virtual void evaluate(const mech::Configuration & config, std::deque<SelfPlayData::MoveProb> & distribution) override;
 };
 
 }
